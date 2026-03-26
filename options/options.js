@@ -898,8 +898,7 @@ document.getElementById('btn-clear-history').addEventListener('click', async () 
   document.getElementById('history-list').innerHTML = '<p class="field-hint">${msg('empty_no_history')}</p>';
 });
 
-// Cargar al inicio
-applyI18n();
+// Cargar al inicio (applyI18n se ejecuta automaticamente desde i18n-helper.js)
 loadConfig();
 loadFallbackConfig();
 loadTemplates();

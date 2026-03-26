@@ -13,9 +13,16 @@ body {
 }
 
 #app {
-  max-width: 640px;
+  max-width: 900px;
+  width: 100%;
   margin: 0 auto;
   padding: 24px;
+}
+
+/* Thunderbird options_ui embeds in iframe - expand to fill */
+html, body {
+  width: 100%;
+  min-width: 400px;
 }
 
 /* Header */

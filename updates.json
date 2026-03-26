@@ -1,0 +1,17 @@
+{
+  "addons": {
+    "easymailai@easysoft.es": {
+      "updates": [
+        {
+          "version": "2.2.0",
+          "update_link": "https://github.com/EasySoft-Tech-SL/easymailai-thunderbird/releases/download/v2.2.0/easymailai-2.2.0.xpi",
+          "applications": {
+            "gecko": {
+              "strict_min_version": "115.0"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

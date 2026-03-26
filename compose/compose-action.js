@@ -628,7 +628,7 @@ document.querySelectorAll('.len-btn').forEach(btn => {
 
 // --- Inicializacion ---
 (async () => {
-  applyI18n();
+  // applyI18n se ejecuta automaticamente desde i18n-helper.js al cargar
   currentTabId = await getCurrentTabId();
   await renderQuickActions();
 
