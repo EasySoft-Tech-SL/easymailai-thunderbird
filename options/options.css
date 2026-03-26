@@ -1,0 +1,516 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 14px;
+  color: #1a1a1a;
+  background: #f9fafb;
+  line-height: 1.5;
+}
+
+#app {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #4F46E5;
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+}
+
+.header h1 {
+  font-size: 22px;
+  color: #4F46E5;
+  font-weight: 700;
+}
+
+.subtitle {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.subtitle a {
+  color: #4F46E5;
+  text-decoration: none;
+}
+
+.subtitle a:hover {
+  text-decoration: underline;
+}
+
+/* Sections */
+.section {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.section h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #111827;
+}
+
+.section-desc {
+  color: #6b7280;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+/* Fields */
+.field {
+  margin-bottom: 14px;
+}
+
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  background: white;
+  color: #1a1a1a;
+  transition: border-color 0.15s;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: #4F46E5;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+}
+
+.field textarea {
+  resize: vertical;
+  font-family: "Cascadia Code", "Fira Code", "Consolas", monospace;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.input-group {
+  display: flex;
+  gap: 6px;
+}
+
+.input-group input,
+.input-group select {
+  flex: 1;
+}
+
+/* Botones */
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s, opacity 0.15s;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
+.btn-primary {
+  background: #4F46E5;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #4338CA;
+}
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.btn-secondary:hover {
+  background: #e5e7eb;
+}
+
+.btn-sm {
+  padding: 5px 12px;
+  font-size: 12px;
+}
+
+.btn-icon {
+  padding: 6px 10px;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-icon:hover {
+  background: #e5e7eb;
+}
+
+/* Test result */
+.test-result {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.test-result.success {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+}
+
+.test-result.error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+/* Field hints */
+.field-hint {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.field-hint.success { color: #166534; }
+.field-hint.error { color: #991b1b; }
+
+.field-row {
+  margin-bottom: 14px;
+}
+
+/* Prompt actions */
+.prompt-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Custom profiles */
+.profile-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  background: #fafafa;
+}
+
+.profile-item .profile-icon {
+  font-size: 16px;
+}
+
+.profile-item .profile-name {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.profile-item .profile-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.profile-item .profile-actions button {
+  padding: 3px 8px;
+  font-size: 11px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+}
+
+.profile-item .profile-actions button:hover {
+  background: #f3f4f6;
+}
+
+.profile-item .profile-actions button.danger:hover {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #991b1b;
+}
+
+.profile-editor {
+  margin-top: 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.profile-editor summary {
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #4F46E5;
+  cursor: pointer;
+  background: #f9fafb;
+}
+
+.profile-editor[open] summary {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.profile-editor .field {
+  padding: 0 10px;
+  margin-top: 10px;
+}
+
+.profile-editor .field:first-of-type {
+  margin-top: 10px;
+}
+
+.profile-editor .prompt-actions {
+  padding: 10px;
+}
+
+/* Feature toggles */
+.feature-toggle {
+  padding: 10px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.feature-toggle:last-child {
+  border-bottom: none;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.toggle-label input[type="checkbox"] {
+  margin-top: 3px;
+  width: 16px;
+  height: 16px;
+  accent-color: #4F46E5;
+  cursor: pointer;
+}
+
+.toggle-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.toggle-text strong {
+  font-size: 13px;
+  color: #111827;
+}
+
+.toggle-text small {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.feature-sub {
+  padding: 8px 0 4px 26px;
+}
+
+/* Save bar */
+.save-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.save-status {
+  font-size: 13px;
+  color: #166534;
+  font-weight: 500;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+footer a {
+  color: #4F46E5;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+footer p + p {
+  margin-top: 2px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* History list */
+.history-item {
+  display: flex;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 12px;
+}
+
+.history-item:last-child {
+  border-bottom: none;
+}
+
+.history-date {
+  color: #9ca3af;
+  white-space: nowrap;
+  min-width: 120px;
+}
+
+.history-action {
+  color: #4F46E5;
+  font-weight: 500;
+  min-width: 80px;
+}
+
+.history-preview {
+  color: #6b7280;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Dark mode - sigue el tema de Thunderbird */
+@media (prefers-color-scheme: dark) {
+  body {
+    color: #e5e7eb;
+    background: #1f2937;
+  }
+
+  .header h1 { color: #818cf8; }
+  .title { color: #818cf8; }
+  .subtitle a { color: #818cf8; }
+
+  .section {
+    background: #374151;
+    border-color: #4b5563;
+  }
+
+  .section h2 { color: #f3f4f6; }
+
+  .field input,
+  .field select,
+  .field textarea {
+    background: #1f2937;
+    border-color: #4b5563;
+    color: #e5e7eb;
+  }
+
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    border-color: #818cf8;
+    box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.2);
+  }
+
+  .btn-secondary {
+    background: #374151;
+    color: #e5e7eb;
+    border-color: #4b5563;
+  }
+
+  .btn-secondary:hover {
+    background: #4b5563;
+  }
+
+  .btn-primary {
+    background: #6366f1;
+  }
+
+  .btn-primary:hover {
+    background: #4f46e5;
+  }
+
+  .btn-icon {
+    background: #374151;
+    border-color: #4b5563;
+    color: #e5e7eb;
+  }
+
+  .test-result.success {
+    background: #064e3b;
+    border-color: #065f46;
+    color: #6ee7b7;
+  }
+
+  .test-result.error {
+    background: #7f1d1d;
+    border-color: #991b1b;
+    color: #fca5a5;
+  }
+
+  .profile-item {
+    background: #1f2937;
+    border-color: #4b5563;
+  }
+
+  .profile-item .profile-actions button {
+    background: #374151;
+    border-color: #4b5563;
+    color: #e5e7eb;
+  }
+
+  .profile-editor summary,
+  .advanced-section summary {
+    background: #1f2937;
+    color: #9ca3af;
+  }
+
+  .toggle-text strong { color: #f3f4f6; }
+  .toggle-text small { color: #9ca3af; }
+  .field-hint { color: #9ca3af; }
+  .section-desc { color: #9ca3af; }
+
+  footer {
+    border-color: #4b5563;
+    color: #6b7280;
+  }
+
+  footer a { color: #818cf8; }
+}

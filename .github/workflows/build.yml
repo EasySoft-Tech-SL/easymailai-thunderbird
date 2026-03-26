@@ -1,0 +1,81 @@
+name: Build & Release XPI
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Read version from manifest
+        id: version
+        run: |
+          VERSION=$(jq -r '.version' manifest.json)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Building EasyMailAI v$VERSION"
+
+      - name: Validate manifest.json
+        run: |
+          jq empty manifest.json
+          echo "manifest.json is valid JSON"
+
+      - name: Validate i18n files
+        run: |
+          jq empty _locales/es/messages.json
+          jq empty _locales/en/messages.json
+          ES_KEYS=$(jq 'keys | length' _locales/es/messages.json)
+          EN_KEYS=$(jq 'keys | length' _locales/en/messages.json)
+          echo "ES keys: $ES_KEYS, EN keys: $EN_KEYS"
+          if [ "$ES_KEYS" != "$EN_KEYS" ]; then
+            echo "WARNING: Key count mismatch between es ($ES_KEYS) and en ($EN_KEYS)"
+          fi
+
+      - name: Package XPI
+        run: |
+          zip -r easymailai-${{ steps.version.outputs.version }}.xpi \
+            manifest.json \
+            background.js \
+            lib/ \
+            compose/ \
+            options/ \
+            icons/ \
+            _locales/ \
+            LICENSE \
+            -x "*.md" ".git/*" ".github/*" ".gitignore" ".specstory/*"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: easymailai-${{ steps.version.outputs.version }}.xpi
+          path: easymailai-${{ steps.version.outputs.version }}.xpi
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          name: EasyMailAI v${{ steps.version.outputs.version }}
+          body: |
+            ## EasyMailAI v${{ steps.version.outputs.version }}
+
+            ### Installation
+            1. Download `easymailai-${{ steps.version.outputs.version }}.xpi` below
+            2. In Thunderbird: **Menu > Add-ons > Extensions > gear > Install Add-on From File**
+            3. Select the downloaded file
+            4. Configure your AI provider in EasyMailAI options
+
+            ### Requirements
+            - Thunderbird 115+ (ESR or later)
+            - An API key from Groq, OpenAI, or Mistral (or Ollama for local AI)
+          files: easymailai-${{ steps.version.outputs.version }}.xpi
+          draft: false
+          prerelease: false

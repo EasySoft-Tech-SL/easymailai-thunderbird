@@ -1,0 +1,53 @@
+{
+  "manifest_version": 2,
+  "name": "__MSG_extensionName__",
+  "description": "__MSG_extensionDescription__",
+  "version": "2.2.0",
+  "author": "Easysoft Tech S.L. - Alberto Luque Rivas <desarrollo@easysoft.es>",
+  "homepage_url": "https://easysoft.es",
+  "default_locale": "es",
+  "applications": {
+    "gecko": {
+      "id": "easymailai@easysoft.es",
+      "strict_min_version": "115.0"
+    }
+  },
+  "permissions": [
+    "compose",
+    "storage",
+    "menus",
+    "accountsRead"
+  ],
+  "background": {
+    "scripts": ["lib/constants.js", "lib/i18n-helper.js", "lib/api-client.js", "lib/text-processor.js", "lib/prompt-manager.js", "background.js"]
+  },
+  "compose_action": {
+    "default_title": "__MSG_composeActionTitle__",
+    "default_icon": "icons/icon.svg",
+    "default_popup": "compose/compose-action.html"
+  },
+  "options_ui": {
+    "page": "options/options.html"
+  },
+  "compose_scripts": [
+    {
+      "js": ["compose/autocomplete.js"],
+      "css": ["compose/autocomplete.css"]
+    }
+  ],
+  "commands": {
+    "improve-text": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+I"
+      },
+      "description": "__MSG_composeActionTitle__"
+    }
+  },
+  "content_security_policy": "script-src 'self'; object-src 'self'; connect-src https: http://localhost:*;",
+  "icons": {
+    "16": "icons/icon.svg",
+    "32": "icons/icon.svg",
+    "48": "icons/icon.svg",
+    "128": "icons/icon.svg"
+  }
+}

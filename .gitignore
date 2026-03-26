@@ -1,0 +1,4 @@
+.specstory/
+*.xpi
+.DS_Store
+Thumbs.db

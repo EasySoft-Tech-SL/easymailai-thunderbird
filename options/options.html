@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div id="app">
+    <div class="header">
+      <img src="../icons/icon.svg" alt="" class="logo">
+      <div>
+        <h1>EasyMailAI</h1>
+        <p class="subtitle"><span data-i18n="opt_config_label"></span> - <a href="https://easysoft.es" target="_blank">Easysoft</a></p>
+      </div>
+    </div>
+
+    <!-- Proveedor -->
+    <section class="section">
+      <h2 data-i18n="opt_provider"></h2>
+
+      <div class="field">
+        <label for="provider" data-i18n="opt_provider_label"></label>
+        <select id="provider">
+          <option value="groq">Groq</option>
+          <option value="openai">OpenAI</option>
+          <option value="ollama">Ollama (Local)</option>
+          <option value="mistral">Mistral</option>
+          <option value="custom" data-i18n="provider_custom"></option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="base-url" data-i18n="opt_base_url"></label>
+        <input type="url" id="base-url" placeholder="https://api.groq.com/openai/v1">
+      </div>
+
+      <div class="field" id="field-apikey">
+        <label for="api-key" data-i18n="opt_api_key"></label>
+        <div class="input-group">
+          <input type="password" id="api-key" placeholder="sk-...">
+          <button id="btn-toggle-key" class="btn btn-icon" data-i18n-title="opt_toggle_key">&#128065;</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="model" data-i18n="opt_model"></label>
+        <div class="input-group">
+          <select id="model"></select>
+          <input type="text" id="model-custom" placeholder="" class="hidden">
+          <button id="btn-refresh-models" class="btn btn-icon" data-i18n-title="opt_refresh_models">&#8635;</button>
+        </div>
+        <span id="model-status" class="field-hint hidden"></span>
+      </div>
+
+      <div class="field-row">
+        <button id="btn-test" class="btn btn-secondary" data-i18n="opt_test_connection"></button>
+      </div>
+      <div id="test-result" class="test-result hidden"></div>
+    </section>
+
+    <!-- Proveedor Fallback -->
+    <section class="section">
+      <h2 data-i18n="opt_fallback"></h2>
+      <p class="section-desc" data-i18n="opt_fallback_desc"></p>
+
+      <div class="feature-toggle">
+        <label class="toggle-label">
+          <input type="checkbox" id="fallback-enabled">
+          <span class="toggle-text">
+            <strong data-i18n="opt_enable_fallback"></strong>
+            <small data-i18n="opt_enable_fallback_desc"></small>
+          </span>
+        </label>
+      </div>
+
+      <div id="fallback-config" class="hidden">
+        <div class="field">
+          <label for="fallback-provider" data-i18n="opt_provider_label"></label>
+          <select id="fallback-provider">
+            <option value="groq">Groq</option>
+            <option value="openai">OpenAI</option>
+            <option value="ollama">Ollama (Local)</option>
+            <option value="mistral">Mistral</option>
+            <option value="custom" data-i18n="provider_custom"></option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="fallback-url" data-i18n="opt_base_url"></label>
+          <input type="url" id="fallback-url">
+        </div>
+
+        <div class="field" id="field-fallback-key">
+          <label for="fallback-key" data-i18n="opt_api_key"></label>
+          <input type="password" id="fallback-key" placeholder="sk-...">
+        </div>
+
+        <div class="field">
+          <label for="fallback-model" data-i18n="opt_model"></label>
+          <input type="text" id="fallback-model" placeholder="">
+        </div>
+      </div>
+    </section>
+
+    <!-- Parametros API -->
+    <section class="section">
+      <h2 data-i18n="opt_api_params"></h2>
+      <p class="section-desc" data-i18n="opt_api_params_desc"></p>
+
+      <div class="field">
+        <label for="api-temperature" data-i18n="opt_temperature"></label>
+        <input type="number" id="api-temperature" value="0.7" min="0" max="2" step="0.1">
+        <span class="field-hint" data-i18n="opt_temperature_hint"></span>
+      </div>
+
+      <div class="field">
+        <label for="api-max-tokens" data-i18n="opt_max_tokens"></label>
+        <input type="number" id="api-max-tokens" value="4096" min="256" max="32000" step="256">
+        <span class="field-hint" data-i18n="opt_max_tokens_hint"></span>
+      </div>
+    </section>
+
+    <!-- Prompt base -->
+    <section class="section">
+      <h2 data-i18n="opt_prompt"></h2>
+      <p class="section-desc" data-i18n="opt_prompt_desc"></p>
+
+      <div class="field">
+        <textarea id="prompt" rows="8" data-i18n-placeholder="opt_prompt_placeholder"></textarea>
+      </div>
+
+      <div class="prompt-actions">
+        <button id="btn-reset-prompt" class="btn btn-secondary btn-sm" data-i18n="opt_reset_prompt"></button>
+      </div>
+    </section>
+
+    <!-- Prompt de autocompletado -->
+    <section class="section">
+      <h2 data-i18n="opt_autocomplete_prompt"></h2>
+      <p class="section-desc" data-i18n="opt_autocomplete_prompt_desc"></p>
+
+      <div class="field">
+        <textarea id="autocomplete-prompt" rows="6" data-i18n-placeholder="opt_prompt_placeholder"></textarea>
+      </div>
+
+      <div class="prompt-actions">
+        <button id="btn-reset-autocomplete-prompt" class="btn btn-secondary btn-sm" data-i18n="opt_reset_prompt"></button>
+      </div>
+    </section>
+
+    <!-- Perfiles personalizados -->
+    <section class="section">
+      <h2 data-i18n="opt_custom_prompts"></h2>
+      <p class="section-desc" data-i18n="opt_custom_prompts_desc"></p>
+
+      <div id="custom-profiles-list"></div>
+
+      <details id="profile-editor" class="profile-editor">
+        <summary id="profile-editor-title" data-i18n="opt_create_prompt"></summary>
+        <div class="field">
+          <label for="profile-name" data-i18n="opt_name"></label>
+          <input type="text" id="profile-name" placeholder="">
+        </div>
+        <div class="field">
+          <label for="profile-icon" data-i18n="opt_icon"></label>
+          <input type="text" id="profile-icon" placeholder="" maxlength="4">
+        </div>
+        <div class="field">
+          <label for="profile-prompt" data-i18n="opt_prompt_label"></label>
+          <textarea id="profile-prompt" rows="5" data-i18n-placeholder="opt_prompt_instructions"></textarea>
+        </div>
+        <div class="prompt-actions">
+          <button id="btn-save-profile" class="btn btn-primary btn-sm" data-i18n="btn_save"></button>
+          <button id="btn-cancel-profile" class="btn btn-secondary btn-sm" data-i18n="btn_cancel"></button>
+        </div>
+        <input type="hidden" id="profile-edit-id">
+      </details>
+    </section>
+
+    <!-- Funcionalidades -->
+    <section class="section">
+      <h2 data-i18n="opt_features"></h2>
+      <p class="section-desc" data-i18n="opt_features_desc"></p>
+
+      <div class="feature-toggle">
+        <label class="toggle-label">
+          <input type="checkbox" id="feat-autocomplete" checked>
+          <span class="toggle-text">
+            <strong data-i18n="opt_feat_autocomplete"></strong>
+            <small data-i18n="opt_feat_autocomplete_desc"></small>
+          </span>
+        </label>
+      </div>
+
+      <div class="feature-sub hidden" id="autocomplete-options">
+        <div class="field">
+          <label for="feat-autocomplete-delay" data-i18n="opt_feat_autocomplete_delay"></label>
+          <input type="number" id="feat-autocomplete-delay" value="2000" min="500" max="10000" step="500">
+          <span class="field-hint" data-i18n="opt_feat_autocomplete_delay_hint"></span>
+        </div>
+      </div>
+
+      <div class="feature-toggle">
+        <label class="toggle-label">
+          <input type="checkbox" id="feat-tone" checked>
+          <span class="toggle-text">
+            <strong data-i18n="opt_feat_tone"></strong>
+            <small data-i18n="opt_feat_tone_desc"></small>
+          </span>
+        </label>
+      </div>
+
+      <div class="feature-toggle">
+        <label class="toggle-label">
+          <input type="checkbox" id="feat-length" checked>
+          <span class="toggle-text">
+            <strong data-i18n="opt_feat_length"></strong>
+            <small data-i18n="opt_feat_length_desc"></small>
+          </span>
+        </label>
+      </div>
+
+      <div class="feature-toggle">
+        <label class="toggle-label">
+          <input type="checkbox" id="feat-translate" checked>
+          <span class="toggle-text">
+            <strong data-i18n="opt_feat_translate"></strong>
+            <small data-i18n="opt_feat_translate_desc"></small>
+          </span>
+        </label>
+      </div>
+
+      <div class="feature-toggle">
+        <label class="toggle-label">
+          <input type="checkbox" id="feat-generate" checked>
+          <span class="toggle-text">
+            <strong data-i18n="opt_feat_generate"></strong>
+            <small data-i18n="opt_feat_generate_desc"></small>
+          </span>
+        </label>
+      </div>
+
+      <div class="feature-toggle">
+        <label class="toggle-label">
+          <input type="checkbox" id="feat-analysis" checked>
+          <span class="toggle-text">
+            <strong data-i18n="opt_feat_analysis"></strong>
+            <small data-i18n="opt_feat_analysis_desc"></small>
+          </span>
+        </label>
+      </div>
+
+      <div class="feature-toggle">
+        <label class="toggle-label">
+          <input type="checkbox" id="feat-learning" checked>
+          <span class="toggle-text">
+            <strong data-i18n="opt_feat_learning"></strong>
+            <small data-i18n="opt_feat_learning_desc"></small>
+          </span>
+        </label>
+      </div>
+    </section>
+
+    <!-- Snippets -->
+    <section class="section">
+      <h2 data-i18n="opt_snippets"></h2>
+      <p class="section-desc" data-i18n="opt_snippets_desc"></p>
+
+      <div id="snippets-list"></div>
+
+      <details id="snippet-editor" class="profile-editor">
+        <summary id="snippet-editor-title" data-i18n="opt_create_snippet"></summary>
+        <div class="field">
+          <label for="snippet-name" data-i18n="opt_name"></label>
+          <input type="text" id="snippet-name" placeholder="">
+        </div>
+        <div class="field">
+          <label for="snippet-content" data-i18n="opt_template_content"></label>
+          <textarea id="snippet-content" rows="3" placeholder=""></textarea>
+          <span class="field-hint" data-i18n="opt_snippets_hint"></span>
+        </div>
+        <div class="prompt-actions">
+          <button id="btn-save-snippet" class="btn btn-primary btn-sm" data-i18n="btn_save"></button>
+          <button id="btn-cancel-snippet" class="btn btn-secondary btn-sm" data-i18n="btn_cancel"></button>
+        </div>
+        <input type="hidden" id="snippet-edit-id">
+      </details>
+    </section>
+
+    <!-- Contexto por cuenta -->
+    <section class="section">
+      <h2 data-i18n="opt_account_context"></h2>
+      <p class="section-desc" data-i18n="opt_account_context_desc"></p>
+      <div id="account-contexts-list"></div>
+      <button id="btn-refresh-accounts" class="btn btn-secondary btn-sm" data-i18n="opt_refresh_accounts"></button>
+    </section>
+
+    <!-- Plantillas -->
+    <section class="section">
+      <h2 data-i18n="opt_templates"></h2>
+      <p class="section-desc" data-i18n="opt_templates_desc"></p>
+
+      <div id="templates-list"></div>
+
+      <details id="template-editor" class="profile-editor">
+        <summary id="template-editor-title" data-i18n="opt_create_template"></summary>
+        <div class="field">
+          <label for="template-name" data-i18n="opt_name"></label>
+          <input type="text" id="template-name" placeholder="">
+        </div>
+        <div class="field">
+          <label for="template-content" data-i18n="opt_template_content"></label>
+          <textarea id="template-content" rows="6" placeholder=""></textarea>
+          <span class="field-hint" data-i18n="opt_template_vars_hint"></span>
+        </div>
+        <div class="prompt-actions">
+          <button id="btn-save-template" class="btn btn-primary btn-sm" data-i18n="btn_save"></button>
+          <button id="btn-cancel-template" class="btn btn-secondary btn-sm" data-i18n="btn_cancel"></button>
+        </div>
+        <input type="hidden" id="template-edit-id">
+      </details>
+    </section>
+
+    <!-- Guardar -->
+    <div class="save-bar">
+      <button id="btn-save" class="btn btn-primary" data-i18n="opt_save_config"></button>
+      <span id="save-status" class="save-status hidden"></span>
+    </div>
+
+    <!-- Export/Import -->
+    <section class="section">
+      <h2 data-i18n="opt_export_import"></h2>
+      <p class="section-desc" data-i18n="opt_export_import_desc"></p>
+
+      <div class="field-row" style="display:flex;gap:8px;">
+        <button id="btn-export" class="btn btn-secondary" data-i18n="opt_export"></button>
+        <button id="btn-import" class="btn btn-secondary" data-i18n="opt_import"></button>
+        <input type="file" id="import-file" accept=".json" class="hidden">
+      </div>
+      <div id="export-import-status" class="test-result hidden"></div>
+    </section>
+
+    <!-- Historial -->
+    <section class="section">
+      <h2 data-i18n="opt_history"></h2>
+      <p class="section-desc" data-i18n="opt_history_desc"></p>
+      <div id="history-list"></div>
+      <button id="btn-clear-history" class="btn btn-secondary btn-sm" data-i18n="opt_clear_history"></button>
+    </section>
+
+    <footer>
+      <p>EasyMailAI <span id="version-text"></span> &mdash; <span data-i18n="footer_developed_by"></span> <a href="https://easysoft.es" target="_blank">Easysoft Tech S.L.</a></p>
+      <p>Alberto Luque Rivas &lt;desarrollo@easysoft.es&gt;</p>
+    </footer>
+  </div>
+
+  <script src="../lib/constants.js"></script>
+  <script src="../lib/i18n-helper.js"></script>
+  <script src="../lib/api-client.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>

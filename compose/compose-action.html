@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="compose-action.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Vista inicial: selector de accion -->
+    <div id="view-initial" class="view">
+      <div class="header">
+        <img src="../icons/icon.svg" alt="" class="logo">
+        <span class="title">EasyMailAI</span>
+      </div>
+
+      <div id="quick-actions" class="quick-actions"></div>
+
+      <details class="advanced-section">
+        <summary data-i18n="ui_advanced_options"></summary>
+
+        <div class="option-group">
+          <label data-i18n="ui_tone_label"></label>
+          <select id="sel-tone">
+            <option value="" data-i18n="ui_tone_no_change"></option>
+            <option value="formal" data-i18n="ui_tone_formal"></option>
+            <option value="informal" data-i18n="ui_tone_informal"></option>
+            <option value="amigable" data-i18n="ui_tone_friendly"></option>
+            <option value="directo" data-i18n="ui_tone_direct"></option>
+            <option value="diplomatico" data-i18n="ui_tone_diplomatic"></option>
+          </select>
+        </div>
+
+        <div class="option-group">
+          <label data-i18n="ui_length_label"></label>
+          <div class="length-control">
+            <button class="len-btn" data-len="shorter" data-i18n="ui_length_shorter"></button>
+            <button class="len-btn active" data-len="same" data-i18n="ui_length_same"></button>
+            <button class="len-btn" data-len="longer" data-i18n="ui_length_longer"></button>
+          </div>
+        </div>
+
+        <div class="option-group">
+          <label data-i18n="ui_translate_label"></label>
+          <select id="sel-translate">
+            <option value="" data-i18n="ui_translate_no"></option>
+            <option value="es">Español</option>
+            <option value="en">English</option>
+            <option value="fr">Français</option>
+            <option value="de">Deutsch</option>
+            <option value="it">Italiano</option>
+            <option value="pt">Português</option>
+            <option value="ca">Català</option>
+            <option value="zh">中文</option>
+            <option value="ja">日本語</option>
+            <option value="ar">العربية</option>
+          </select>
+        </div>
+      </details>
+
+      <p class="hint" data-i18n="hint_initial"></p>
+    </div>
+
+    <!-- Vista: procesando -->
+    <div id="view-loading" class="view hidden">
+      <div class="header">
+        <img src="../icons/icon.svg" alt="" class="logo">
+        <span class="title">EasyMailAI</span>
+      </div>
+      <div class="loading">
+        <div class="spinner"></div>
+        <p id="loading-text" data-i18n="status_processing"></p>
+      </div>
+      <button id="btn-cancel" class="btn btn-secondary btn-full" data-i18n="btn_cancel"></button>
+    </div>
+
+    <!-- Vista: previsualizacion -->
+    <div id="view-preview" class="view hidden">
+      <div class="header">
+        <img src="../icons/icon.svg" alt="" class="logo">
+        <span class="title">EasyMailAI</span>
+      </div>
+      <div class="preview-tabs">
+        <button class="tab active" data-tab="improved" data-i18n="tab_improved"></button>
+        <button class="tab" data-tab="original" data-i18n="tab_original"></button>
+      </div>
+      <div id="tab-improved" class="preview-content"></div>
+      <div id="tab-original" class="preview-content hidden"></div>
+      <div class="actions">
+        <button id="btn-accept" class="btn btn-primary" data-i18n="btn_accept"></button>
+        <button id="btn-discard" class="btn btn-secondary" data-i18n="btn_discard"></button>
+      </div>
+    </div>
+
+    <!-- Vista: aplicado -->
+    <div id="view-applied" class="view hidden">
+      <div class="header">
+        <img src="../icons/icon.svg" alt="" class="logo">
+        <span class="title">EasyMailAI</span>
+      </div>
+      <div class="success-msg">
+        <span class="check">&#10003;</span> <span data-i18n="msg_applied"></span>
+      </div>
+      <div class="actions">
+        <button id="btn-undo" class="btn btn-secondary" data-i18n="btn_undo"></button>
+        <button id="btn-another" class="btn btn-primary" data-i18n="btn_another"></button>
+      </div>
+    </div>
+
+    <!-- Vista: generar respuesta -->
+    <div id="view-reply" class="view hidden">
+      <div class="header">
+        <img src="../icons/icon.svg" alt="" class="logo">
+        <span class="title">EasyMailAI</span>
+      </div>
+      <p class="section-label" data-i18n="label_generate_reply"></p>
+      <input type="text" id="reply-instructions" class="input-field"
+        data-i18n-placeholder="placeholder_reply_instructions">
+      <div class="actions">
+        <button id="btn-reply-go" class="btn btn-primary" data-i18n="btn_generate"></button>
+        <button id="btn-reply-cancel" class="btn btn-secondary" data-i18n="btn_cancel"></button>
+      </div>
+    </div>
+
+    <!-- Vista: elegir asunto -->
+    <div id="view-subject" class="view hidden">
+      <div class="header">
+        <img src="../icons/icon.svg" alt="" class="logo">
+        <span class="title">EasyMailAI</span>
+      </div>
+      <p class="section-label" data-i18n="label_choose_subject"></p>
+      <div id="subject-options" class="subject-options"></div>
+      <div class="actions">
+        <button id="btn-subject-cancel" class="btn btn-secondary btn-full" data-i18n="btn_back"></button>
+      </div>
+    </div>
+
+    <!-- Vista: contexto destinatario -->
+    <div id="view-recipient" class="view hidden">
+      <div class="header">
+        <img src="../icons/icon.svg" alt="" class="logo">
+        <span class="title">EasyMailAI</span>
+      </div>
+      <p class="section-label" data-i18n="prompt_recipient_context_name"></p>
+      <select id="sel-recipient-type" class="input-field" style="margin-bottom:8px;">
+        <option value="cliente">Cliente</option>
+        <option value="jefe">Jefe / Superior</option>
+        <option value="companero">Compañero</option>
+        <option value="proveedor">Proveedor</option>
+        <option value="candidato">Candidato</option>
+        <option value="desconocido">Desconocido / Formal</option>
+      </select>
+      <div class="actions">
+        <button id="btn-recipient-go" class="btn btn-primary" data-i18n="btn_accept"></button>
+        <button id="btn-recipient-cancel" class="btn btn-secondary" data-i18n="btn_cancel"></button>
+      </div>
+    </div>
+
+    <!-- Vista: resultado de analisis -->
+    <div id="view-analysis" class="view hidden">
+      <div class="header">
+        <img src="../icons/icon.svg" alt="" class="logo">
+        <span class="title">EasyMailAI</span>
+      </div>
+      <p id="analysis-title" class="section-label"></p>
+      <div id="analysis-result" class="preview-content"></div>
+      <div class="actions">
+        <button id="btn-analysis-back" class="btn btn-secondary btn-full" data-i18n="btn_back"></button>
+      </div>
+    </div>
+
+    <!-- Vista: error -->
+    <div id="view-error" class="view hidden">
+      <div class="header">
+        <img src="../icons/icon.svg" alt="" class="logo">
+        <span class="title">EasyMailAI</span>
+      </div>
+      <div class="error-msg">
+        <span class="error-icon">!</span>
+        <p id="error-text"></p>
+      </div>
+      <div class="actions">
+        <button id="btn-retry" class="btn btn-primary" data-i18n="btn_retry"></button>
+        <button id="btn-options" class="btn btn-secondary" data-i18n="btn_options"></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../lib/constants.js"></script>
+  <script src="../lib/i18n-helper.js"></script>
+  <script src="compose-action.js"></script>
+</body>
+</html>
