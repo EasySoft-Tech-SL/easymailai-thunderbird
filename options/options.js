@@ -111,24 +111,28 @@ async function refreshModels() {
     populateModelSelect(models, currentModel);
     showModelStatus(msg('success_models_loaded', String(models.length)), 'success');
   } catch (error) {
+    console.error('EasyMailAI: Error loading models:', error);
     if (error.name === 'AbortError' || error.name === 'TimeoutError') {
       showModelStatus(msg('error_timeout'), 'error');
     } else if (error instanceof TypeError) {
-      showModelStatus(msg('error_network'), 'error');
+      showModelStatus(msg('error_network') + ' (' + error.message + ')', 'error');
     } else {
-      showModelStatus(error.message.substring(0, 100), 'error');
+      showModelStatus('Error: ' + error.message.substring(0, 150), 'error');
     }
   } finally {
     btnRefresh.disabled = false;
   }
 }
 
-function showModelStatus(msg, type) {
-  elModelStatus.textContent = msg;
+function showModelStatus(text, type) {
+  elModelStatus.textContent = text;
   elModelStatus.className = 'field-hint' + (type ? ` ${type}` : '');
   elModelStatus.classList.remove('hidden');
-  if (type) {
-    setTimeout(() => elModelStatus.classList.add('hidden'), UI_DEFAULTS.errorMessageTimeout);
+  // No ocultar automaticamente para que el usuario vea el resultado
+  if (type === 'error') {
+    setTimeout(() => elModelStatus.classList.add('hidden'), 10000);
+  } else if (type === 'success') {
+    setTimeout(() => elModelStatus.classList.add('hidden'), 5000);
   }
 }
 
