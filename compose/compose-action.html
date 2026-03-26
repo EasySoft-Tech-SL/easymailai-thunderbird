@@ -168,6 +168,19 @@
       </div>
     </div>
 
+    <!-- Vista: seleccionar plantilla -->
+    <div id="view-templates" class="view hidden">
+      <div class="header">
+        <img src="../icons/icon.svg" alt="" class="logo">
+        <span class="title">EasyMailAI</span>
+      </div>
+      <p class="section-label" data-i18n="opt_templates"></p>
+      <div id="template-select-list" class="subject-options"></div>
+      <div class="actions">
+        <button id="btn-templates-cancel" class="btn btn-secondary btn-full" data-i18n="btn_back"></button>
+      </div>
+    </div>
+
     <!-- Vista: resultado de analisis -->
     <div id="view-analysis" class="view hidden">
       <div class="header">
@@ -197,6 +210,9 @@
       </div>
     </div>
   </div>
+
+  <!-- Tooltip global -->
+  <div id="global-tip"></div>
 
   <script src="../lib/constants.js"></script>
   <script src="../lib/i18n-helper.js"></script>

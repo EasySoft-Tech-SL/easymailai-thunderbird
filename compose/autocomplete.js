@@ -77,6 +77,10 @@
     removeGhost();
     if (!text) return;
 
+    // Añadir espacio al inicio si el texto no empieza con espacio/puntuacion
+    if (!/^[\s.,;:!?)]/.test(text)) {
+      text = ' ' + text;
+    }
     currentSuggestion = text;
 
     const selection = document.getSelection();

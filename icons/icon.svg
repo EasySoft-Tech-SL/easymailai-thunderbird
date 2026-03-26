@@ -1,19 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
-  <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#4F46E5"/>
-      <stop offset="100%" style="stop-color:#7C3AED"/>
-    </linearGradient>
-  </defs>
-  <rect width="128" height="128" rx="20" fill="url(#bg)"/>
-  <!-- Pencil/pen icon -->
+  <rect width="128" height="128" rx="20" fill="#0969da"/>
   <g transform="translate(24, 20) scale(0.625)" fill="none" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
     <path d="M96 8L120 32L40 112L8 120L16 88Z"/>
     <path d="M80 24L104 48"/>
     <line x1="40" y1="112" x2="8" y2="120"/>
   </g>
-  <!-- AI sparkle dots -->
-  <circle cx="100" cy="28" r="4" fill="#FCD34D"/>
-  <circle cx="110" cy="44" r="3" fill="#FCD34D"/>
-  <circle cx="108" cy="18" r="2.5" fill="#FCD34D"/>
+  <circle cx="100" cy="28" r="4" fill="#ffffff" opacity="0.7"/>
+  <circle cx="110" cy="44" r="3" fill="#ffffff" opacity="0.5"/>
+  <circle cx="108" cy="18" r="2.5" fill="#ffffff" opacity="0.6"/>
 </svg>

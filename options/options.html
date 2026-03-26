@@ -20,7 +20,7 @@
 
       <div class="field">
         <label for="provider" data-i18n="opt_provider_label"></label>
-        <select id="provider">
+        <select id="provider" class="searchable">
           <option value="groq">Groq</option>
           <option value="openai">OpenAI</option>
           <option value="ollama">Ollama (Local)</option>
@@ -31,7 +31,7 @@
 
       <div class="field">
         <label for="base-url" data-i18n="opt_base_url"></label>
-        <input type="url" id="base-url" placeholder="https://api.groq.com/openai/v1">
+        <input type="url" id="base-url" value="https://api.groq.com/openai/v1">
       </div>
 
       <div class="field" id="field-apikey">
@@ -45,7 +45,7 @@
       <div class="field">
         <label for="model" data-i18n="opt_model"></label>
         <div class="input-group">
-          <select id="model"></select>
+          <select id="model" class="searchable"></select>
           <input type="text" id="model-custom" placeholder="" class="hidden">
           <button id="btn-refresh-models" class="btn btn-icon" data-i18n-title="opt_refresh_models">&#8635;</button>
         </div>
@@ -181,6 +181,24 @@
     <section class="section">
       <h2 data-i18n="opt_features"></h2>
       <p class="section-desc" data-i18n="opt_features_desc"></p>
+
+      <div class="feature-toggle" style="padding-bottom:14px;border-bottom:2px solid #0969da;">
+        <div class="option-group" style="padding:0;border:none;">
+          <label data-i18n="opt_quick_action"></label>
+          <select id="feat-quick-action" class="searchable">
+            <option value="improve" data-i18n="action_improve"></option>
+            <option value="formalize" data-i18n="action_formalize"></option>
+            <option value="simplify" data-i18n="action_simplify"></option>
+            <option value="shorten" data-i18n="action_shorten"></option>
+            <option value="expand" data-i18n="action_expand"></option>
+            <option value="grammar" data-i18n="action_grammar"></option>
+            <option value="friendly" data-i18n="action_friendly"></option>
+            <option value="diplomatic" data-i18n="action_diplomatic"></option>
+            <option value="complete" data-i18n="action_complete"></option>
+          </select>
+          <span class="field-hint" data-i18n="opt_quick_action_hint"></span>
+        </div>
+      </div>
 
       <div class="feature-toggle">
         <label class="toggle-label">
@@ -356,6 +374,7 @@
 
   <script src="../lib/constants.js"></script>
   <script src="../lib/i18n-helper.js"></script>
+  <script src="../lib/searchable-select.js"></script>
   <script src="../lib/api-client.js"></script>
   <script src="options.js"></script>
 </body>

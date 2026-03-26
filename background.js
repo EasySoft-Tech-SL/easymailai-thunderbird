@@ -547,17 +547,67 @@ async function handleApplyTemplate(tabId, templateId, variables) {
       return { success: false, error: msg('error_template_not_found') };
     }
 
-    // Resolver variables en el contenido de la plantilla
+    // Resolver variables pasadas manualmente
     let content = template.content;
     if (variables && typeof variables === 'object') {
       content = PromptManager.resolveVariables(content, variables);
     }
 
-    // Si hay variables sin resolver, pedir a la IA que las rellene
+    // Si hay variables sin resolver, recopilar contexto del compositor
     const unresolvedVars = PromptManager.extractVariables(content);
     if (unresolvedVars.length > 0) {
-      const prompt = DEFAULT_TEMPLATE_FILL_PROMPT;
-      content = await completeWithFallback(prompt, content);
+      // Leer todo el contexto disponible del compositor
+      const details = await browser.compose.getComposeDetails(tabId);
+      const contextParts = [];
+
+      // Destinatarios
+      if (details.to?.length > 0) {
+        contextParts.push(`To: ${details.to.join(', ')}`);
+      }
+      if (details.cc?.length > 0) {
+        contextParts.push(`CC: ${details.cc.join(', ')}`);
+      }
+
+      // Asunto
+      if (details.subject) {
+        contextParts.push(`Subject: ${details.subject}`);
+      }
+
+      // Remitente
+      if (details.from) {
+        contextParts.push(`From: ${details.from}`);
+      }
+
+      // Cuerpo existente (si ya hay texto escrito)
+      const bodyText = details.isPlainText ? details.plainTextBody : details.body;
+      if (bodyText) {
+        const plainBody = details.isPlainText ? bodyText : TextProcessor.htmlToPlainText(bodyText);
+        if (plainBody.trim()) {
+          contextParts.push(`Email body already written:\n${plainBody.substring(0, 1000)}`);
+        }
+      }
+
+      // Correo citado (si es una respuesta, puede tener info del contacto)
+      if (bodyText) {
+        const { quotedContent } = TextProcessor.separateQuotedContent(bodyText, !details.isPlainText);
+        if (quotedContent) {
+          const quotedText = !details.isPlainText
+            ? TextProcessor.htmlToPlainText(quotedContent)
+            : quotedContent;
+          contextParts.push(`Previous email in thread:\n${quotedText.substring(0, 500)}`);
+        }
+      }
+
+      const context = contextParts.join('\n');
+
+      const prompt = `Fill the fields marked with {name} in the following email template.
+Use REAL data from the context provided (recipient names, subject, etc).
+NEVER invent names or data - use what is available in the context.
+If a field cannot be determined from the context, leave the {field} placeholder as is.
+Respond ONLY with the completed template:`;
+
+      const userMessage = `=== CONTEXT ===\n${context}\n=== TEMPLATE ===\n${content}\n=== END ===`;
+      content = await completeWithFallback(prompt, userMessage);
     }
 
     const { isPlainText } = await getComposeContent(tabId);
@@ -922,20 +972,12 @@ async function handleAutocomplete(text) {
   }
 }
 
-// Atajo de teclado: Ctrl+Shift+I abre el popup del composeAction
+// Atajo de teclado: Ctrl+Shift+I abre el popup
 browser.commands.onCommand.addListener(async (command) => {
   if (command === 'improve-text') {
-    // Thunderbird permite abrir el popup via composeAction.openPopup() en TB 115+
     try {
       await browser.composeAction.openPopup();
-    } catch (_) {
-      // Fallback: si openPopup no esta disponible, mejora directa
-      const tabs = await browser.tabs.query({ active: true, currentWindow: true });
-      const tabId = tabs[0]?.id;
-      if (tabId) {
-        await handleImprove(tabId, 'improve', '');
-      }
-    }
+    } catch (_) {}
   }
 });
 
@@ -981,3 +1023,29 @@ browser.menus.onClicked.addListener(async (info, tab) => {
 browser.tabs.onRemoved.addListener((tabId) => {
   tabState.delete(tabId);
 });
+
+// --- Registrar compose scripts para autocompletado ---
+// API: messenger.composeScripts.register() (MV2, TB 82+)
+(async () => {
+  try {
+    const api = messenger?.composeScripts || browser?.composeScripts;
+    if (api) {
+      // Registrar para todas las futuras ventanas de composicion
+      await api.register({
+        js: [{ file: 'compose/autocomplete.js' }],
+        css: [{ file: 'compose/autocomplete.css' }]
+      });
+
+      // Inyectar tambien en ventanas de composicion ya abiertas
+      const composeTabs = await messenger.tabs.query({ type: 'messageCompose' });
+      for (const tab of composeTabs) {
+        try {
+          await messenger.tabs.executeScript(tab.id, { file: 'compose/autocomplete.js' });
+          await messenger.tabs.insertCSS(tab.id, { file: 'compose/autocomplete.css' });
+        } catch (_) {}
+      }
+    }
+  } catch (err) {
+    console.log('EasyMailAI: composeScripts not available:', err.message);
+  }
+})();

@@ -29,14 +29,9 @@
   },
   "options_ui": {
     "page": "options/options.html",
+    "open_in_tab": true,
     "browser_style": false
   },
-  "compose_scripts": [
-    {
-      "js": ["compose/autocomplete.js"],
-      "css": ["compose/autocomplete.css"]
-    }
-  ],
   "commands": {
     "improve-text": {
       "suggested_key": {

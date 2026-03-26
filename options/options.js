@@ -22,7 +22,7 @@ function onProviderChange(isInitialLoad) {
   const provider = elProvider.value;
   const config = PROVIDERS[provider];
 
-  // Solo resetear URL si no es carga inicial (evitar sobreescribir URL personalizada)
+  // Al cambiar proveedor manualmente, siempre poner su URL
   if (!isInitialLoad) {
     elBaseUrl.value = config.baseUrl;
   }
@@ -59,6 +59,8 @@ function populateModelSelect(models, selectedModel) {
   if (selectedModel && models.includes(selectedModel)) {
     elModel.value = selectedModel;
   }
+  // Refrescar searchable select si existe
+  if (elModel._searchable) elModel._searchable.refresh();
 }
 
 function getSelectedModel() {
@@ -447,7 +449,7 @@ function resetProfileEditor() {
 
 // --- Event Listeners ---
 
-elProvider.addEventListener('change', onProviderChange);
+elProvider.addEventListener('change', () => onProviderChange(false));
 
 document.getElementById('btn-save').addEventListener('click', saveConfig);
 document.getElementById('btn-test').addEventListener('click', testConnection);
@@ -487,6 +489,11 @@ async function loadFeatureConfig() {
   document.getElementById('feat-generate').checked = config.generate !== false;
   document.getElementById('feat-analysis').checked = config.analysis !== false;
   document.getElementById('feat-learning').checked = config.learningMode !== false;
+  if (config.quickAction) {
+    const qaSelect = document.getElementById('feat-quick-action');
+    qaSelect.value = config.quickAction;
+    if (qaSelect._searchable) qaSelect._searchable.refresh();
+  }
 
   document.getElementById('autocomplete-options').classList.toggle(
     'hidden',
@@ -503,7 +510,8 @@ async function saveFeatureConfig() {
     translate: document.getElementById('feat-translate').checked,
     generate: document.getElementById('feat-generate').checked,
     analysis: document.getElementById('feat-analysis').checked,
-    learningMode: document.getElementById('feat-learning').checked
+    learningMode: document.getElementById('feat-learning').checked,
+    quickAction: document.getElementById('feat-quick-action').value || 'improve'
   };
 
   await browser.storage.local.set({ featureConfig });
@@ -878,7 +886,7 @@ async function loadHistory() {
   const history = result?.history || [];
 
   if (history.length === 0) {
-    container.innerHTML = '<p class="field-hint">${msg('empty_no_history')}</p>';
+    container.innerHTML = `<p class="field-hint">${msg('empty_no_history')}</p>`;
     return;
   }
 
@@ -899,10 +907,14 @@ async function loadHistory() {
 
 document.getElementById('btn-clear-history').addEventListener('click', async () => {
   await browser.storage.local.set({ improvementHistory: [] });
-  document.getElementById('history-list').innerHTML = '<p class="field-hint">${msg('empty_no_history')}</p>';
+  document.getElementById('history-list').innerHTML = `<p class="field-hint">${msg('empty_no_history')}</p>`;
 });
 
-// Cargar al inicio (applyI18n se ejecuta automaticamente desde i18n-helper.js)
+// Aplicar i18n primero, luego inicializar searchable selects
+applyI18n();
+initSearchableSelects();
+
+// Cargar al inicio
 loadConfig();
 loadFallbackConfig();
 loadTemplates();

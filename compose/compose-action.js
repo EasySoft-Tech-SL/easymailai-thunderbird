@@ -14,7 +14,8 @@ const views = {
   subject: document.getElementById('view-subject'),
   analysis: document.getElementById('view-analysis'),
   recipient: document.getElementById('view-recipient'),
-  snippets: document.getElementById('view-snippets')
+  snippets: document.getElementById('view-snippets'),
+  templates: document.getElementById('view-templates')
 };
 
 // Estado local
@@ -206,44 +207,80 @@ async function renderQuickActions() {
     featureConfig = stored.featureConfig || {};
   } catch (_) {}
 
-  const actions = [
-    { id: 'improve', icon: '✨', i18nKey: 'action_improve', primary: true },
-    { id: 'formalize', icon: '👔', i18nKey: 'action_formalize' },
-    { id: 'simplify', icon: '💡', i18nKey: 'action_simplify' },
-    { id: 'shorten', icon: '✂️', i18nKey: 'action_shorten' },
-    { id: 'expand', icon: '📝', i18nKey: 'action_expand' },
-    { id: 'grammar', icon: '📖', i18nKey: 'action_grammar' },
-    { id: 'friendly', icon: '😊', i18nKey: 'action_friendly' },
-    { id: 'diplomatic', icon: '🤝', i18nKey: 'action_diplomatic' },
-    { id: 'complete', icon: '🔮', i18nKey: 'action_complete', feature: 'generate' },
-    { id: 'suggest_next', icon: '💭', i18nKey: 'action_suggest_next', feature: 'generate' },
-    { id: 'reply_generate', icon: '↩️', i18nKey: 'action_reply_generate', feature: 'generate', special: 'reply' },
-    { id: 'from_bullets', icon: '📋', i18nKey: 'action_from_bullets', feature: 'generate' },
-    { id: 'generate_subject', icon: '📌', i18nKey: 'action_generate_subject', feature: 'generate', special: 'subject' },
-    { id: 'analyze_tone', icon: '🎭', i18nKey: 'action_analyze_tone', feature: 'analysis', special: 'analyze' },
-    { id: 'analyze_sentiment', icon: '🔍', i18nKey: 'action_analyze_sentiment', feature: 'analysis', special: 'analyzeSentiment' },
-    { id: 'detect_ambiguity', icon: '⚠️', i18nKey: 'action_detect_ambiguity', feature: 'analysis', special: 'analyze' },
-    { id: 'pre_send_check', icon: '✅', i18nKey: 'action_pre_send_check', feature: 'analysis', special: 'analyze' },
-    { id: 'summarize_thread', icon: '📑', i18nKey: 'action_summarize_thread', feature: 'analysis', special: 'summarizeThread' },
-    { id: 'learn_style', icon: '🧠', i18nKey: 'action_learn_style', feature: 'learning', special: 'learnStyle' },
-    { id: 'bilingual', icon: '🌍', i18nKey: 'action_bilingual', feature: 'generate' },
-    { id: 'from_transcription', icon: '🎙️', i18nKey: 'action_from_transcription', feature: 'generate' },
-    { id: 'readability', icon: '📊', i18nKey: 'action_readability', feature: 'analysis', special: 'analyze' },
-    { id: 'suggest_cc', icon: '👥', i18nKey: 'action_suggest_cc', feature: 'analysis', special: 'analyze' },
-    { id: 'adapt_thread', icon: '🔗', i18nKey: 'action_adapt_thread', feature: 'generate', special: 'adaptThread' },
-    { id: 'generate_signature', icon: '✍️', i18nKey: 'action_generate_signature', feature: 'generate', special: 'generateSignature' },
-    { id: 'batch', icon: '⚡', i18nKey: 'action_batch', feature: 'generate', special: 'batch' },
-    { id: 'recipient_context', icon: '🎯', i18nKey: 'prompt_recipient_context_name', special: 'recipientContext' },
-    { id: 'insert_snippet', icon: '📎', i18nKey: 'opt_snippets', feature: 'generate', special: 'snippets' }
+  // Secciones organizadas con tooltips i18n
+  const sections = [
+    {
+      title: null,
+      actions: [
+        { id: 'improve', icon: '✨', i18nKey: 'action_improve', primary: true, tipKey: 'tip_improve' }
+      ]
+    },
+    {
+      titleKey: 'ui_tone_label',
+      actions: [
+        { id: 'formalize', icon: '👔', i18nKey: 'action_formalize', tipKey: 'tip_formalize' },
+        { id: 'simplify', icon: '💡', i18nKey: 'action_simplify', tipKey: 'tip_simplify' },
+        { id: 'shorten', icon: '✂️', i18nKey: 'action_shorten', tipKey: 'tip_shorten' },
+        { id: 'expand', icon: '📝', i18nKey: 'action_expand', tipKey: 'tip_expand' },
+        { id: 'grammar', icon: '📖', i18nKey: 'action_grammar', tipKey: 'tip_grammar' },
+        { id: 'friendly', icon: '😊', i18nKey: 'action_friendly', tipKey: 'tip_friendly' },
+        { id: 'diplomatic', icon: '🤝', i18nKey: 'action_diplomatic', tipKey: 'tip_diplomatic' },
+        { id: 'recipient_context', icon: '🎯', i18nKey: 'prompt_recipient_context_name', special: 'recipientContext', tipKey: 'tip_recipient_context' },
+        { id: 'adapt_thread', icon: '🔗', i18nKey: 'action_adapt_thread', feature: 'generate', special: 'adaptThread', tipKey: 'tip_adapt_thread' }
+      ]
+    },
+    {
+      titleKey: 'opt_feat_generate',
+      feature: 'generate',
+      actions: [
+        { id: 'reply_generate', icon: '↩️', i18nKey: 'action_reply_generate', special: 'reply', tipKey: 'tip_reply_generate' },
+        { id: 'from_bullets', icon: '📋', i18nKey: 'action_from_bullets', tipKey: 'tip_from_bullets' },
+        { id: 'complete', icon: '🔮', i18nKey: 'action_complete', tipKey: 'tip_complete' },
+        { id: 'suggest_next', icon: '💭', i18nKey: 'action_suggest_next', tipKey: 'tip_suggest_next' },
+        { id: 'generate_subject', icon: '📌', i18nKey: 'action_generate_subject', special: 'subject', tipKey: 'tip_generate_subject' },
+        { id: 'bilingual', icon: '🌍', i18nKey: 'action_bilingual', tipKey: 'tip_bilingual' },
+        { id: 'from_transcription', icon: '🎙️', i18nKey: 'action_from_transcription', tipKey: 'tip_from_transcription' },
+        { id: 'generate_signature', icon: '✍️', i18nKey: 'action_generate_signature', special: 'generateSignature', tipKey: 'tip_generate_signature' },
+        { id: 'batch', icon: '⚡', i18nKey: 'action_batch', special: 'batch', tipKey: 'tip_batch' }
+      ]
+    },
+    {
+      titleKey: 'opt_feat_analysis',
+      feature: 'analysis',
+      actions: [
+        { id: 'analyze_tone', icon: '🎭', i18nKey: 'action_analyze_tone', special: 'analyze', tipKey: 'tip_analyze_tone' },
+        { id: 'analyze_sentiment', icon: '🔍', i18nKey: 'action_analyze_sentiment', special: 'analyzeSentiment', tipKey: 'tip_analyze_sentiment' },
+        { id: 'detect_ambiguity', icon: '⚠️', i18nKey: 'action_detect_ambiguity', special: 'analyze', tipKey: 'tip_detect_ambiguity' },
+        { id: 'pre_send_check', icon: '✅', i18nKey: 'action_pre_send_check', special: 'analyze', tipKey: 'tip_pre_send_check' },
+        { id: 'summarize_thread', icon: '📑', i18nKey: 'action_summarize_thread', special: 'summarizeThread', tipKey: 'tip_summarize_thread' },
+        { id: 'readability', icon: '📊', i18nKey: 'action_readability', special: 'analyze', tipKey: 'tip_readability' },
+        { id: 'suggest_cc', icon: '👥', i18nKey: 'action_suggest_cc', special: 'analyze', tipKey: 'tip_suggest_cc' }
+      ]
+    },
+    {
+      titleKey: 'opt_feat_learning',
+      feature: 'learning',
+      actions: [
+        { id: 'learn_style', icon: '🧠', i18nKey: 'action_learn_style', special: 'learnStyle', tipKey: 'tip_learn_style' }
+      ]
+    },
+    {
+      titleKey: 'opt_snippets',
+      feature: 'generate',
+      actions: [
+        { id: 'insert_snippet', icon: '📎', i18nKey: 'opt_snippets', special: 'snippets', tipKey: 'tip_insert_snippet' }
+      ]
+    },
+    {
+      titleKey: 'opt_templates',
+      feature: 'generate',
+      actions: [
+        { id: 'apply_template', icon: '📄', i18nKey: 'opt_templates', special: 'templates', tipKey: 'tip_apply_template' }
+      ]
+    }
   ];
 
-  // Filtrar acciones segun features activas
-  const visibleActions = actions.filter(a => {
-    if (!a.feature) return true;
-    return featureConfig[a.feature] !== false;
-  });
-
-  // Ocultar/mostrar secciones avanzadas segun config (compatible TB 115+)
+  // Ocultar/mostrar secciones avanzadas
   const toneSection = document.getElementById('sel-tone')?.closest('.option-group');
   const lengthSection = document.querySelector('.length-control')?.closest('.option-group');
   const translateSection = document.getElementById('sel-translate')?.closest('.option-group');
@@ -252,21 +289,51 @@ async function renderQuickActions() {
   if (lengthSection) lengthSection.classList.toggle('hidden', featureConfig.length === false);
   if (translateSection) translateSection.classList.toggle('hidden', featureConfig.translate === false);
 
-  // Si todas las opciones avanzadas estan desactivadas, ocultar la seccion
   const advancedSection = document.querySelector('.advanced-section');
   if (advancedSection) {
-    const allHidden = featureConfig.tone === false &&
-      featureConfig.length === false &&
-      featureConfig.translate === false;
+    const allHidden = featureConfig.tone === false && featureConfig.length === false && featureConfig.translate === false;
     advancedSection.classList.toggle('hidden', allHidden);
   }
 
+  // Cargar prompts personalizados
+  let customProfiles = [];
+  try {
+    const stored = await browser.storage.local.get('promptProfiles');
+    customProfiles = stored.promptProfiles || [];
+  } catch (_) {}
+
+  if (customProfiles.length > 0) {
+    sections.push({
+      titleKey: 'opt_custom_prompts',
+      actions: customProfiles.map(p => ({
+        id: p.id, icon: p.icon || '📌', customLabel: p.name, isCustom: true, tooltip: p.name
+      }))
+    });
+  }
+
+  // Render
   container.innerHTML = '';
-  visibleActions.forEach(action => {
-    const btn = document.createElement('button');
-    btn.className = 'action-btn' + (action.primary ? ' primary' : '');
-    const label = msg(action.i18nKey);
-    btn.innerHTML = `<span class="action-icon">${action.icon}</span><span class="action-label">${label}</span>`;
+  sections.forEach(section => {
+    // Verificar feature flag de la seccion
+    if (section.feature && featureConfig[section.feature] === false) return;
+
+    // Titulo de seccion
+    if (section.titleKey) {
+      const title = document.createElement('div');
+      title.className = 'section-title';
+      title.textContent = msg(section.titleKey);
+      container.appendChild(title);
+    }
+
+    const grid = document.createElement('div');
+    grid.className = 'actions-grid';
+
+    section.actions.forEach(action => {
+      const btn = document.createElement('button');
+      btn.className = 'action-btn' + (action.primary ? ' primary' : '');
+      const label = action.customLabel || msg(action.i18nKey);
+      const helpHtml = action.tipKey ? `<span class="action-help" data-tip-key="${action.tipKey}">?</span>` : '';
+      btn.innerHTML = `<span class="action-icon">${action.icon}</span><span class="action-label">${label}</span>${helpHtml}`;
     btn.addEventListener('click', () => {
       if (action.special === 'reply') {
         showView('reply');
@@ -288,13 +355,18 @@ async function renderQuickActions() {
         startBatch();
       } else if (action.special === 'snippets') {
         showSnippetsView();
+      } else if (action.special === 'templates') {
+        showTemplatesView();
       } else if (action.special === 'recipientContext') {
         showView('recipient');
       } else {
         startAction(action.id);
       }
     });
-    container.appendChild(btn);
+    grid.appendChild(btn);
+    });
+
+    container.appendChild(grid);
   });
 }
 
@@ -496,6 +568,49 @@ async function insertSnippet(snippetId) {
   }
 }
 
+async function showTemplatesView() {
+  const stored = await browser.storage.local.get('emailTemplates');
+  const templates = stored.emailTemplates || [];
+  const container = document.getElementById('template-select-list');
+  container.innerHTML = '';
+
+  if (templates.length === 0) {
+    container.innerHTML = `<p class="field-hint">${msg('empty_no_templates')}</p>`;
+    showView('templates');
+    return;
+  }
+
+  templates.forEach(tpl => {
+    const btn = document.createElement('button');
+    btn.className = 'subject-option';
+    btn.textContent = `📄 ${tpl.name}`;
+    btn.addEventListener('click', () => applyTemplateAction(tpl.id));
+    container.appendChild(btn);
+  });
+  showView('templates');
+}
+
+async function applyTemplateAction(templateId) {
+  if (isProcessing) return;
+  isProcessing = true;
+  document.getElementById('loading-text').textContent = msg('status_processing');
+  showView('loading');
+
+  try {
+    const result = await sendMessage('applyTemplate', { templateId });
+    if (!document.body) return;
+    if (result.success) {
+      showView('applied');
+    } else {
+      showError(result.error);
+    }
+  } catch (error) {
+    showError(msg('error_generic', error.message));
+  } finally {
+    isProcessing = false;
+  }
+}
+
 async function startBatch() {
   return runAnalysisAction('batchImprove', { profileId: 'improve' }, msg('loading_batch'), msg('action_batch'), 'message');
 }
@@ -607,6 +722,11 @@ document.getElementById('btn-snippets-cancel').addEventListener('click', () => {
   showView('initial');
 });
 
+// Templates - volver
+document.getElementById('btn-templates-cancel').addEventListener('click', () => {
+  showView('initial');
+});
+
 // Tabs de previsualizacion
 document.querySelectorAll('.tab').forEach(tab => {
   tab.addEventListener('click', () => {
@@ -624,6 +744,45 @@ document.querySelectorAll('.len-btn').forEach(btn => {
     document.querySelectorAll('.len-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
   });
+});
+
+// --- Tooltip global ---
+const globalTip = document.getElementById('global-tip');
+
+document.addEventListener('mouseover', (e) => {
+  const helpEl = e.target.closest('.action-help[data-tip-key]');
+  if (!helpEl) {
+    globalTip.style.display = 'none';
+    return;
+  }
+  const tipKey = helpEl.getAttribute('data-tip-key');
+  const tipText = msg(tipKey);
+  if (!tipText || tipText === tipKey) {
+    globalTip.style.display = 'none';
+    return;
+  }
+
+  globalTip.textContent = tipText;
+  globalTip.style.display = 'block';
+
+  const rect = helpEl.getBoundingClientRect();
+  let top = rect.top - globalTip.offsetHeight - 8;
+  let left = rect.right - globalTip.offsetWidth;
+
+  // Si se sale por arriba, poner debajo
+  if (top < 4) top = rect.bottom + 8;
+  // Si se sale por la izquierda
+  if (left < 4) left = 4;
+
+  globalTip.style.top = top + 'px';
+  globalTip.style.left = left + 'px';
+});
+
+document.addEventListener('mouseout', (e) => {
+  const helpEl = e.target.closest('.action-help');
+  if (helpEl) {
+    globalTip.style.display = 'none';
+  }
 });
 
 // --- Inicializacion ---
