@@ -49,8 +49,9 @@ async function setComposeContent(tabId, content, isPlainText) {
  * @param {AbortSignal} signal - Para cancelar
  * @param {string} [profileId] - ID del perfil/prompt a usar
  * @param {string} [extraInstructions] - Instrucciones extra (tono, longitud, idioma)
+ * @param {number} [tabId] - Tab del compositor (para contexto de cuenta)
  */
-async function processWithAI(text, signal, profileId, extraInstructions) {
+async function processWithAI(text, signal, profileId, extraInstructions, tabId) {
   const config = await ApiClient.getConfig();
 
   try {
@@ -84,9 +85,31 @@ async function processWithAI(text, signal, profileId, extraInstructions) {
     }
   }
 
+  // Añadir contexto de cuenta si esta disponible
+  if (tabId) {
+    try {
+      const details = await browser.compose.getComposeDetails(tabId);
+      if (details.identityId) {
+        const accounts = await browser.accounts.list();
+        for (const account of accounts) {
+          const identity = account.identities?.find(id => id.id === details.identityId);
+          if (identity) {
+            const ctxStored = await browser.storage.local.get(STORAGE_KEYS.accountContexts);
+            const ctx = (ctxStored[STORAGE_KEYS.accountContexts] || {})[account.id];
+            if (ctx) {
+              if (ctx.tone) prompt += `\nUse a ${ctx.tone} tone.`;
+              if (ctx.lang) prompt += `\nWrite the response in ${LANGUAGE_NAMES[ctx.lang] || ctx.lang}.`;
+            }
+            break;
+          }
+        }
+      }
+    } catch (_) {}
+  }
+
   // Añadir instrucciones extra si las hay
   if (extraInstructions && typeof extraInstructions === 'string' && extraInstructions.trim()) {
-    prompt += '\n\nInstrucciones adicionales:\n' + extraInstructions.trim();
+    prompt += '\n\nAdditional instructions:\n' + extraInstructions.trim();
   }
 
   // Intentar con proveedor principal, fallback si falla
@@ -181,7 +204,7 @@ browser.runtime.onMessage.addListener((message, sender) => {
       return handleAutocomplete(message.text);
 
     default:
-      return Promise.resolve({ error: `Accion desconocida: ${message.action}` });
+      return Promise.resolve({ error: `Unknown action: ${message.action}` });
   }
 });
 
@@ -238,7 +261,7 @@ async function handleImprove(tabId, profileId, extraInstructions, selectedText) 
     const controller = new AbortController();
     tabState.get(tabId).abortController = controller;
 
-    const improvedText = await processWithAI(trimmed, controller.signal, profileId, extraInstructions);
+    const improvedText = await processWithAI(trimmed, controller.signal, profileId, extraInstructions, tabId);
 
     // Limpiar referencia al controller
     const state = tabState.get(tabId);

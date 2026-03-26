@@ -13,7 +13,8 @@ const views = {
   reply: document.getElementById('view-reply'),
   subject: document.getElementById('view-subject'),
   analysis: document.getElementById('view-analysis'),
-  recipient: document.getElementById('view-recipient')
+  recipient: document.getElementById('view-recipient'),
+  snippets: document.getElementById('view-snippets')
 };
 
 // Estado local
@@ -232,7 +233,8 @@ async function renderQuickActions() {
     { id: 'adapt_thread', icon: '🔗', i18nKey: 'action_adapt_thread', feature: 'generate', special: 'adaptThread' },
     { id: 'generate_signature', icon: '✍️', i18nKey: 'action_generate_signature', feature: 'generate', special: 'generateSignature' },
     { id: 'batch', icon: '⚡', i18nKey: 'action_batch', feature: 'generate', special: 'batch' },
-    { id: 'recipient_context', icon: '🎯', i18nKey: 'prompt_recipient_context_name', special: 'recipientContext' }
+    { id: 'recipient_context', icon: '🎯', i18nKey: 'prompt_recipient_context_name', special: 'recipientContext' },
+    { id: 'insert_snippet', icon: '📎', i18nKey: 'opt_snippets', feature: 'generate', special: 'snippets' }
   ];
 
   // Filtrar acciones segun features activas
@@ -284,6 +286,8 @@ async function renderQuickActions() {
         runAnalysisAction('generateSignature', { info: '' }, msg('loading_generating_signature'), msg('action_generate_signature'));
       } else if (action.special === 'batch') {
         startBatch();
+      } else if (action.special === 'snippets') {
+        showSnippetsView();
       } else if (action.special === 'recipientContext') {
         showView('recipient');
       } else {
@@ -442,6 +446,56 @@ async function startAdaptThread() {
   }
 }
 
+async function showSnippetsView() {
+  // Cargar snippets desde storage
+  const stored = await browser.storage.local.get('snippets');
+  const snippets = stored.snippets || [];
+  const container = document.getElementById('snippet-select-list');
+  container.innerHTML = '';
+
+  if (snippets.length === 0) {
+    container.innerHTML = `<p class="field-hint">${msg('empty_no_templates')}</p>`;
+    showView('snippets');
+    return;
+  }
+
+  snippets.forEach(snippet => {
+    const btn = document.createElement('button');
+    btn.className = 'subject-option';
+    btn.textContent = `📎 ${snippet.name}`;
+    btn.addEventListener('click', () => insertSnippet(snippet.id));
+    container.appendChild(btn);
+  });
+  showView('snippets');
+}
+
+async function insertSnippet(snippetId) {
+  if (isProcessing) return;
+  isProcessing = true;
+  document.getElementById('loading-text').textContent = msg('status_processing');
+  showView('loading');
+
+  try {
+    const result = await sendMessage('insertSnippet', { snippetId });
+    if (!document.body) return;
+    if (result.success && result.improved) {
+      originalText = result.original || '';
+      improvedText = result.improved;
+      document.getElementById('tab-improved').textContent = improvedText;
+      document.getElementById('tab-original').textContent = originalText;
+      showView('preview');
+    } else if (result.success) {
+      showView('applied');
+    } else {
+      showError(result.error);
+    }
+  } catch (error) {
+    showError(msg('error_generic', error.message));
+  } finally {
+    isProcessing = false;
+  }
+}
+
 async function startBatch() {
   return runAnalysisAction('batchImprove', { profileId: 'improve' }, msg('loading_batch'), msg('action_batch'), 'message');
 }
@@ -545,6 +599,11 @@ document.getElementById('btn-recipient-go').addEventListener('click', async () =
 });
 
 document.getElementById('btn-recipient-cancel').addEventListener('click', () => {
+  showView('initial');
+});
+
+// Snippets - volver
+document.getElementById('btn-snippets-cancel').addEventListener('click', () => {
   showView('initial');
 });
 
